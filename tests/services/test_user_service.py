@@ -95,3 +95,15 @@ def test_login_with_unknown_username_raises_user_not_found(
         service.login("bob", PASSWORD)
 
     assert exc_info.value.username == "bob"
+
+
+def test_login_with_correct_password_returns_the_user(
+    service: UserService, repository: MagicMock, hasher: MagicMock
+) -> None:
+    repository.get.return_value = ALICE
+    hasher.verify.return_value = True
+
+    user = service.login("alice", PASSWORD)
+
+    assert user == ALICE
+    hasher.verify.assert_called_once_with(PASSWORD, PASSWORD_HASH)
