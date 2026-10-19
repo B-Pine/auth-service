@@ -20,3 +20,7 @@ class UserAlreadyExistsError(AuthError):
         """
         super().__init__(f"Username '{username}' is already taken")
         self.username = username
+
+
+class InvalidPasswordError(AuthError):
+    """Raised when a password is not acceptable."""

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_mock import MockerFixture
 
-from auth.exceptions import UserAlreadyExistsError
+from auth.exceptions import InvalidPasswordError, UserAlreadyExistsError
 from auth.hashers.password_hasher import PasswordHasher
 from auth.models import User
 from auth.repositories.user_repository import UserRepository
@@ -53,3 +53,31 @@ def test_register_rejects_a_taken_username(
     assert exc_info.value.username == "alice"
     repository.add.assert_not_called()
     hasher.hash.assert_not_called()
+
+
+@pytest.mark.parametrize("password", ["", "short", "7-chars"])
+def test_register_rejects_a_password_shorter_than_8_characters(
+    service: UserService, repository: MagicMock, hasher: MagicMock, password: str
+) -> None:
+    with pytest.raises(InvalidPasswordError, match="at least 8 characters"):
+        service.register("alice", password)
+
+    repository.add.assert_not_called()
+    hasher.hash.assert_not_called()
+
+
+def test_register_accepts_a_password_of_exactly_8_characters(
+    service: UserService, repository: MagicMock
+) -> None:
+    service.register("alice", "8-chars!")
+
+    repository.add.assert_called_once()
+
+
+def test_password_policy_is_checked_before_the_username(
+    service: UserService, repository: MagicMock
+) -> None:
+    repository.get.return_value = User(username="alice", password_hash="existing")
+
+    with pytest.raises(InvalidPasswordError):
+        service.register("alice", "short")
