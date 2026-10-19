@@ -12,6 +12,10 @@ class InMemoryUserRepository(UserRepository):
     implement the same interface for permanent storage.
     """
 
+    def __init__(self) -> None:
+        """Create an empty repository."""
+        self._users: dict[str, User] = {}
+
     def get(self, username: str) -> User | None:
         """Find a user by username.
 
@@ -21,7 +25,7 @@ class InMemoryUserRepository(UserRepository):
         Returns:
             The user, or None if no user has that username.
         """
-        raise NotImplementedError
+        return self._users.get(username)
 
     def add(self, user: User) -> None:
         """Store a new user.
@@ -29,4 +33,4 @@ class InMemoryUserRepository(UserRepository):
         Args:
             user: The user to store.
         """
-        raise NotImplementedError
+        self._users[user.username] = user
