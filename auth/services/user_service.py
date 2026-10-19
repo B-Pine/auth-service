@@ -43,3 +43,15 @@ class UserService:
         user = User(username=username, password_hash=self._hasher.hash(password))
         self._repository.add(user)
         return user
+
+    def login(self, username: str, password: str) -> User:
+        """Verify a user's credentials.
+
+        Args:
+            username: The username to log in with.
+            password: The password to check.
+
+        Returns:
+            The user whose credentials were verified.
+        """
+        raise NotImplementedError

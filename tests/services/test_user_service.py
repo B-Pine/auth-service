@@ -3,7 +3,11 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_mock import MockerFixture
 
-from auth.exceptions import InvalidPasswordError, UserAlreadyExistsError
+from auth.exceptions import (
+    InvalidPasswordError,
+    UserAlreadyExistsError,
+    UserNotFoundError,
+)
 from auth.hashers.password_hasher import PasswordHasher
 from auth.models import User
 from auth.repositories.user_repository import UserRepository
@@ -11,6 +15,7 @@ from auth.services.user_service import UserService
 
 PASSWORD = "correct-horse"
 PASSWORD_HASH = "hashed-correct-horse"
+ALICE = User(username="alice", password_hash=PASSWORD_HASH)
 
 
 @pytest.fixture
@@ -81,3 +86,12 @@ def test_password_policy_is_checked_before_the_username(
 
     with pytest.raises(InvalidPasswordError):
         service.register("alice", "short")
+
+
+def test_login_with_unknown_username_raises_user_not_found(
+    service: UserService,
+) -> None:
+    with pytest.raises(UserNotFoundError) as exc_info:
+        service.login("bob", PASSWORD)
+
+    assert exc_info.value.username == "bob"
