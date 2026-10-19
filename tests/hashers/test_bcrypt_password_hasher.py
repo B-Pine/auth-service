@@ -38,3 +38,12 @@ def test_hash_uses_the_configured_rounds() -> None:
 
 def test_default_rounds_are_12() -> None:
     assert BcryptPasswordHasher().hash(PASSWORD).startswith("$2b$12$")
+
+
+@pytest.mark.parametrize(
+    "bad_hash", ["", "not-a-hash", "$2b$04$tooshort", "é-not-ascii"]
+)
+def test_malformed_hash_does_not_verify(
+    hasher: BcryptPasswordHasher, bad_hash: str
+) -> None:
+    assert not hasher.verify(PASSWORD, bad_hash)
