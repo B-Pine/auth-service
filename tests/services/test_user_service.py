@@ -107,3 +107,13 @@ def test_login_with_correct_password_returns_the_user(
 
     assert user == ALICE
     hasher.verify.assert_called_once_with(PASSWORD, PASSWORD_HASH)
+
+
+def test_login_with_wrong_password_raises_invalid_password(
+    service: UserService, repository: MagicMock, hasher: MagicMock
+) -> None:
+    repository.get.return_value = ALICE
+    hasher.verify.return_value = False
+
+    with pytest.raises(InvalidPasswordError, match="Incorrect password"):
+        service.login("alice", "wrong-password")
