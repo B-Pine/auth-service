@@ -1,6 +1,6 @@
 """User registration and login."""
 
-from auth.exceptions import UserAlreadyExistsError
+from auth.exceptions import UserAlreadyExistsError, UserNotFoundError
 from auth.hashers.password_hasher import PasswordHasher
 from auth.models import User
 from auth.repositories.user_repository import UserRepository
@@ -53,5 +53,11 @@ class UserService:
 
         Returns:
             The user whose credentials were verified.
+
+        Raises:
+            UserNotFoundError: if no user has the username.
         """
+        user = self._repository.get(username)
+        if user is None:
+            raise UserNotFoundError(username)
         raise NotImplementedError
