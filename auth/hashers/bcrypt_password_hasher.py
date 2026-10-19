@@ -44,6 +44,13 @@ class BcryptPasswordHasher(PasswordHasher):
             password_hash: A hash created earlier by ``hash``.
 
         Returns:
-            True if the password matches the hash, otherwise False.
+            True if the password matches the hash, False if it does not,
+            or if the stored hash is malformed: damaged hash must never
+            let anyone in.
         """
-        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("ascii"))
+        try:
+            return bcrypt.checkpw(
+                password.encode("utf-8"), password_hash.encode("ascii")
+            )
+        except ValueError:
+            return False
