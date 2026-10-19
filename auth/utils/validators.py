@@ -24,4 +24,7 @@ def validate_password(password: str) -> None:
             f"Password must be at least {MIN_PASSWORD_LENGTH} characters long"
         )
     if len(password.encode("utf-8")) > MAX_PASSWORD_BYTES:
-        raise InvalidPasswordError("Password is too long")
+        raise InvalidPasswordError(
+            f"Password is too long: the limit is {MAX_PASSWORD_BYTES} bytes, "
+            "and accented letters and symbols count as more than one."
+        )
