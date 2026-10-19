@@ -7,7 +7,7 @@ name = "auth-service"
 version = "0.1.0"
 description = "User authentication service module built with TDD."
 requires-python = ">=3.11"
-dependencies = ["bcrypt"]
+dependencies = ["bcrypt>=5"]
 
 [tool.setuptools.packages.find]
 include = ["auth*"]
