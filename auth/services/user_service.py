@@ -1,6 +1,10 @@
 """User registration and login."""
 
-from auth.exceptions import UserAlreadyExistsError, UserNotFoundError
+from auth.exceptions import (
+    InvalidPasswordError,
+    UserAlreadyExistsError,
+    UserNotFoundError,
+)
 from auth.hashers.password_hasher import PasswordHasher
 from auth.models import User
 from auth.repositories.user_repository import UserRepository
@@ -56,6 +60,7 @@ class UserService:
 
         Raises:
             UserNotFoundError: if no user has the username.
+            InvalidPasswordError: if the password is wrong.
         """
         user = self._repository.get(username)
         if user is None:
@@ -63,4 +68,4 @@ class UserService:
 
         if self._hasher.verify(password, user.password_hash):
             return user
-        raise NotImplementedError
+        raise InvalidPasswordError("Incorrect password")
