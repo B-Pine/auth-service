@@ -60,4 +60,7 @@ class UserService:
         user = self._repository.get(username)
         if user is None:
             raise UserNotFoundError(username)
+
+        if self._hasher.verify(password, user.password_hash):
+            return user
         raise NotImplementedError
