@@ -66,6 +66,6 @@ class UserService:
         if user is None:
             raise UserNotFoundError(username)
 
-        if self._hasher.verify(password, user.password_hash):
-            return user
-        raise InvalidPasswordError("Incorrect password")
+        if not self._hasher.verify(password, user.password_hash):
+            raise InvalidPasswordError("Incorrect password")
+        return user
