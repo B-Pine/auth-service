@@ -1,5 +1,6 @@
 """User registration and login."""
 
+from auth.exceptions import UserAlreadyExistsError
 from auth.hashers.password_hasher import PasswordHasher
 from auth.models import User
 from auth.repositories.user_repository import UserRepository
@@ -27,7 +28,13 @@ class UserService:
 
         Returns:
             The registered user.
+
+        Raises:
+            UserAlreadyExistsError: if the username is already taken.
         """
+        if self._repository.get(username) is not None:
+            raise UserAlreadyExistsError(username)
+
         user = User(username=username, password_hash=self._hasher.hash(password))
         self._repository.add(user)
         return user
