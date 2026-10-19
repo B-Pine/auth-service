@@ -1,5 +1,7 @@
 """Password hasher that uses bcrypt."""
 
+import bcrypt
+
 from auth.hashers.password_hasher import PasswordHasher
 
 DEFAULT_ROUNDS = 12
@@ -31,7 +33,8 @@ class BcryptPasswordHasher(PasswordHasher):
         Returns:
             The bcrypt hash, which includes its salt and cost factor.
         """
-        raise NotImplementedError
+        salt = bcrypt.gensalt(rounds=self._rounds)
+        return bcrypt.hashpw(password.encode("utf-8"), salt).decode("ascii")
 
     def verify(self, password: str, password_hash: str) -> bool:
         """Check whether a password matches a bcrypt hash.
@@ -43,4 +46,4 @@ class BcryptPasswordHasher(PasswordHasher):
         Returns:
             True if the password matches the hash, otherwise False.
         """
-        raise NotImplementedError
+        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("ascii"))
