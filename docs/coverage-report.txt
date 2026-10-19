@@ -1,0 +1,18 @@
+﻿Name                                             Stmts   Miss Branch BrPart  Cover   Missing
+--------------------------------------------------------------------------------------------
+auth\__init__.py                                     0      0      0      0   100%
+auth\exceptions.py                                  10      0      0      0   100%
+auth\hashers\__init__.py                             0      0      0      0   100%
+auth\hashers\bcrypt_password_hasher.py              14      0      0      0   100%
+auth\hashers\password_hasher.py                      6      0      0      0   100%
+auth\models\__init__.py                              2      0      0      0   100%
+auth\models\user.py                                  4      0      0      0   100%
+auth\repositories\__init__.py                        0      0      0      0   100%
+auth\repositories\in_memory_user_repository.py       9      0      0      0   100%
+auth\repositories\user_repository.py                 7      0      0      0   100%
+auth\services\__init__.py                            0      0      0      0   100%
+auth\services\user_service.py                       43      0      6      0   100%
+auth\utils\__init__.py                               0      0      0      0   100%
+auth\utils\validators.py                             8      0      4      0   100%
+--------------------------------------------------------------------------------------------
+TOTAL                                              103      0     10      0   100%
