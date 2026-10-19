@@ -28,4 +28,6 @@ class UserService:
         Returns:
             The registered user.
         """
-        raise NotImplementedError
+        user = User(username=username, password_hash=self._hasher.hash(password))
+        self._repository.add(user)
+        return user
