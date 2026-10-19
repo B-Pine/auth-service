@@ -1,3 +1,4 @@
+import logging
 from unittest.mock import MagicMock
 
 import pytest
@@ -117,3 +118,93 @@ def test_login_with_wrong_password_raises_invalid_password(
 
     with pytest.raises(InvalidPasswordError, match="Incorrect password"):
         service.login("alice", "wrong-password")
+
+
+def test_registration_is_logged(
+    service: UserService, caplog: pytest.LogCaptureFixture
+) -> None:
+    with caplog.at_level(logging.INFO):
+        service.register("alice", PASSWORD)
+
+    assert "user registered username=alice" in caplog.text
+
+
+def test_weak_password_registration_is_logged_as_warning(
+    service: UserService, caplog: pytest.LogCaptureFixture
+) -> None:
+    with caplog.at_level(logging.INFO), pytest.raises(InvalidPasswordError):
+        service.register("alice", "short")
+
+    assert "WARNING" in caplog.text
+    assert "registration rejected username=alice reason=weak_password" in caplog.text
+
+
+def test_taken_username_registration_is_logged_as_warning(
+    service: UserService, repository: MagicMock, caplog: pytest.LogCaptureFixture
+) -> None:
+    repository.get.return_value = ALICE
+
+    with caplog.at_level(logging.INFO), pytest.raises(UserAlreadyExistsError):
+        service.register("alice", PASSWORD)
+
+    assert "WARNING" in caplog.text
+    assert "registration rejected username=alice reason=username_taken" in caplog.text
+
+
+def test_successful_login_is_logged(
+    service: UserService,
+    repository: MagicMock,
+    hasher: MagicMock,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    repository.get.return_value = ALICE
+    hasher.verify.return_value = True
+
+    with caplog.at_level(logging.INFO):
+        service.login("alice", PASSWORD)
+
+    assert "login succeeded username=alice" in caplog.text
+
+
+def test_login_with_unknown_username_is_logged_as_warning(
+    service: UserService, caplog: pytest.LogCaptureFixture
+) -> None:
+    with caplog.at_level(logging.INFO), pytest.raises(UserNotFoundError):
+        service.login("bob", PASSWORD)
+
+    assert "WARNING" in caplog.text
+    assert "login failed username=bob reason=unknown_user" in caplog.text
+
+
+def test_login_with_wrong_password_is_logged_as_warning(
+    service: UserService,
+    repository: MagicMock,
+    hasher: MagicMock,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    repository.get.return_value = ALICE
+    hasher.verify.return_value = False
+
+    with caplog.at_level(logging.INFO), pytest.raises(InvalidPasswordError):
+        service.login("alice", "wrong-password")
+
+    assert "WARNING" in caplog.text
+    assert "login failed username=alice reason=wrong_password" in caplog.text
+
+
+def test_passwords_and_hashes_never_appear_in_logs(
+    service: UserService,
+    repository: MagicMock,
+    hasher: MagicMock,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.DEBUG):
+        service.register("alice", PASSWORD)
+        repository.get.return_value = ALICE
+        hasher.verify.return_value = False
+        with pytest.raises(InvalidPasswordError):
+            service.login("alice", "wrong-secret")
+
+    assert PASSWORD not in caplog.text
+    assert "wrong-secret" not in caplog.text
+    assert PASSWORD_HASH not in caplog.text
