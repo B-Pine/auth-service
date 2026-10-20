@@ -135,3 +135,6 @@ python -m mypy .                                                     # strict ty
 Every behaviour was written test-first, following Red-Green-Refactor, and the commit history shows each stage: `test(red):` for a failing test, `feat(green):` for the minimum code to pass it, `refactor:` for structural improvements with all tests passing, and `test:` for tests that passed immediately because the behaviour already existed.
 
 The project follows Git Flow: features are developed on `feature/*` branches and merged into `develop` through pull requests, each with a review, and releases reach `main` through `release/*` branches. Pull requests are merged with merge commits so that the TDD history stays visible.
+
+## Loom Video
+Auth Video: https://www.loom.com/share/66f8bec9b82c4f9e953cd1f8bc7eb86d
